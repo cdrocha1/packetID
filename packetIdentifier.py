@@ -48,18 +48,18 @@ def name_list(source_list):
 def print_nodes(node_id, packet_dictionary):
     for key in packet_dictionary.keys():
         if node_id == str(key[:2]):
-            print(key)
-            print(packet_dictionary.get(key))
+            print('Full Packed ID: ', key)
+            print('Packet Info:    ', packet_dictionary.get(key))
 
 
 #terminal interface
 interface = 1
-
-sources = name_list(source_list)
-print('Select what node you would like to access: ', sources)
-responce = raw_input()
-print('You Selected: ', responce)
-print_nodes(responce, packetDict)
+while(interface):
+    sources = name_list(source_list)
+    print('Select what node you would like to access: ', sources)
+    responce = input()
+    print('You Selected: \n', responce)
+    print_nodes(responce, packetDict)
 
 
     
