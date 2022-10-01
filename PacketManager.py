@@ -25,14 +25,26 @@ class PacketManager:
         db = cantools.database.load_file(filename)
         i = 0
         for x in db.messages:
+            print("")
             print("Message ",i,": ", x)
+            print("Signals ",i,": ", x.signals)
             i+=1
         return db
+        
+
+        
 
 
 
     def translatePackets(packetID, packetData, db):
         print(db.decode_message(packetID, packetData))
+
+        # try:
+        #     print(db.decode_message(packetID, packetData))
+        # except:
+        #     print('No Message found')
+
+        
 
 
 packetCSV = PacketManager.createPacketDict('packets1.csv')
