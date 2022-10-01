@@ -11,4 +11,4 @@ class PacketManager:
         return reader
 
 PacketManager.createPacketDict('packets.csv')
-# {'Timestamp;Type;ID;Data': '11T082557132;1;cf00203;cde0270004b827ff'}
+# out : {'Timestamp;Type;ID;Data': '11T082557132;1;cf00203;cde0270004b827ff'}
