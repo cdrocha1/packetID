@@ -2,6 +2,7 @@ from asyncio.windows_events import NULL
 import csv
 from tkinter import Pack
 import cantools
+import numpy as np
 
 dbcMessages = []
 dbcSignals = []
@@ -37,8 +38,17 @@ class PacketManager:
 
 
     def translatePackets(packetID, packetData, db):
-        print(db.decode_message(packetID, packetData))
+        # print(db.decode_message(packetID, packetData))
+        print("")
+        print("")
+        print(db.decode_message(2170562561 ,b'\xff\xff\xff\xc0\x0c\xff\xff\xff'))
 
+        # try:
+        #     db.decode_message(packetID, packetData)
+        
+        # except:
+        #     print("no match found")
+        
         # try:
         #     print(db.decode_message(packetID, packetData))
         # except:
@@ -51,10 +61,13 @@ packetCSV = PacketManager.createPacketDict('packets1.csv')
 packetCSV.pop(0)   #removes first line 
 
 db = PacketManager.loadDBCFile('CSS-Electronics-SAE-J1939-DEMO.dbc')
+# PacketManager.translatePackets(db.messages.frame_id, )
 
 for x in packetCSV:
-    print(x)
-    PacketManager.translatePackets(x['ID'], x['Data'], db)
+    #print(x)
+    id = (x['ID'])
+    data = (x['Data'])
+    PacketManager.translatePackets(id, data, db)
 
 # out : {'Timestamp;Type;ID;Data': '11T082557132;1;cf00203;cde0270004b827ff'}
 # out : {'Timestamp;Type;ID;Data': '11T082557132;1;18fe592f;ffffffffe37cdd7c'}
