@@ -41,7 +41,11 @@ class PacketManager:
         # print(db.decode_message(packetID, packetData))
         print("")
         print("")
-        print(db.decode_message(2170562561 ,b'\xff\xff\xff\xc0\x0c\xff\xff\xff'))
+
+        #example for 0x18fef1fe, when translated into Decimal 
+        # print(db.decode_message(b'\x18\xfe\xf1\xfe' ,b'\xff\xff\xff\xc0\x0c\xff\xff\xff'))
+
+        print(db.decode_message(419361278 ,b'\xff\xff\xff\xc0\x0c\xff\xff\xff'))
 
         # try:
         #     db.decode_message(packetID, packetData)
@@ -62,12 +66,15 @@ packetCSV.pop(0)   #removes first line
 
 db = PacketManager.loadDBCFile('CSS-Electronics-SAE-J1939-DEMO.dbc')
 # PacketManager.translatePackets(db.messages.frame_id, )
+id = ""
+data = ""
 
-for x in packetCSV:
-    #print(x)
-    id = (x['ID'])
-    data = (x['Data'])
-    PacketManager.translatePackets(id, data, db)
+PacketManager.translatePackets(id, data, db)
+# for x in packetCSV:
+#     #print(x)
+#     id = (x['ID'])
+#     data = (x['Data'])
+#     PacketManager.translatePackets(id, data, db)
 
 # out : {'Timestamp;Type;ID;Data': '11T082557132;1;cf00203;cde0270004b827ff'}
 # out : {'Timestamp;Type;ID;Data': '11T082557132;1;18fe592f;ffffffffe37cdd7c'}
