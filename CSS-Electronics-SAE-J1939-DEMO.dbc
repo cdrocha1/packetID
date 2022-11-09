@@ -1,7 +1,7 @@
 VERSION ""
 
 
-NS_ : 
+NS_ :
     NS_DESC_
     CM_
     BA_DEF_
@@ -42,11 +42,18 @@ BO_ 2364540158 EEC1: 8 Vector__XXX
 BO_ 2566844926 CCVS1: 8 Vector__XXX
  SG_ WheelBasedVehicleSpeed : 8|16@1+ (0.00390625,0) [0|250.996] "km/h" Vector__XXX
 
+BO_ 2560163582 NC1: 8 Vector__XXX
+ SG_ CabNoiseCtrlTuningState : 2|3@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ CabNoiseCtrlState : 0|2@1+ (1,0) [0|3] "" Vector__XXX
 
 CM_ BO_ 2364540158 "Electronic Engine Controller 1";
 CM_ SG_ 2364540158 EngineSpeed "Actual engine speed which is calculated over a minimum crankshaft angle of 720 degrees divided by the number of cylinders.…";
 CM_ BO_ 2566844926 "Cruise Control/Vehicle Speed 1";
 CM_ SG_ 2566844926 WheelBasedVehicleSpeed "Wheel-Based Vehicle Speed: Speed of the vehicle as calculated from wheel or tailshaft speed.";
+CM_ BO_ 2560163582 "Noise Control 1";
+CM_ SG_ 2560163582 CabNoiseCtrlTuningState "Command values for the Tuning State of the Cab Noise Control System.";
+CM_ SG_ 2560163582 CabNoiseCtrlState "Command signal to change the state of the Cab Noise Control System to on-line or off-line";
+
 BA_DEF_ SG_  "SPN" INT 0 524287;
 BA_DEF_ BO_  "VFrameFormat" ENUM  "StandardCAN","ExtendedCAN","reserved","J1939PG";
 BA_DEF_  "DatabaseVersion" STRING ;
@@ -66,3 +73,8 @@ BA_ "DatabaseVersion" "1.0.0";
 BA_ "VFrameFormat" BO_ 2364540158 3;
 BA_ "SPN" SG_ 2364540158 EngineSpeed 190;
 BA_ "SPN" SG_ 2566844926 WheelBasedVehicleSpeed 84;
+BA_ "VFrameFormat" BO_ 2560163582 3;
+BA_ "SPN" SG_ 2560163582 CabNoiseCtrlTuningState 5058;
+BA_ "SigType" SG_ 2560163582 CabNoiseCtrlTuningState 4;
+BA_ "SPN" SG_ 2560163582 CabNoiseCtrlState 5057;
+BA_ "SigType" SG_ 2560163582 CabNoiseCtrlState 4;

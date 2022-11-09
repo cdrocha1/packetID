@@ -9,58 +9,60 @@ dbcSignals = []
 
 class PacketManager:
     def createPacketDict(packets_file):
-        packet_dict = {}
-        packets = []
-        fieldNames = ['Timestamp', 'Type', 'ID', 'Data']
-        with open(packets_file, newline='\n') as csvfile:
-            reader = csv.DictReader(csvfile, fieldnames=fieldNames, delimiter=';')
-            i = 0
-            for row in reader:
-                #print(row)
-                packets.append(row)
-        #print(packets)
-        return packets
+        if(packets_file.endswith('.csv')):
+            packet_dict = {}
+            packets = []
+            fieldNames = ['Timestamp', 'Type', 'ID', 'Data']
+            with open(packets_file, newline='\n') as csvfile:
+                reader = csv.DictReader(csvfile, fieldnames=fieldNames, delimiter=';')
+                i = 0
+                for row in reader:
+                    #print(row)
+                    packets.append(row)
+            #print(packets)
+            return packets
+        elif(packets_file.endswith('.log')):
+            packet_dict = {}
+
 
     def loadDBCFile(filename):
         print("DBC loading")
         db = cantools.database.load_file(filename)
         i = 0
+        nodeList = {}
         for x in db.messages:
             print("")
             print("Message ",i,": ", x)
             print("Signals ",i,": ", x.signals)
+            
+            splitMessage = str(x).split(",")
+            print("split messages: ", splitMessage)
+        
+            annotation = splitMessage[0].split("'")[1::2]
+            annotation = str(annotation).strip("[']")
+            nodeName = splitMessage[4].split("'")[1::2]
+            nodeName = str(nodeName).strip("[']")
+            nodeID = splitMessage[1][1:]
+            node = {
+                "Node_Name": nodeName,
+                "Project_ID": '1.1.0',
+                "Node_ID": nodeID,
+                "Annotation": annotation,
+                "Icon_Path": "",
+                "xyPosition": ""
+            }
+            nodeList[i] = node
             i+=1
-        return db
+        return db, nodeList
         
 
         
 
 
 
-    def translatePackets(packetID, packetData, db):
-        # print(db.decode_message(packetID, packetData))
-        #print("")
-        #print("")
+    def translatePackets(packetID, packetData, timestamp, db):
 
-        #example for 0x18fef1fe, when translated into Decimal 
-        # print(db.decode_message(b'\x18\xfe\xf1\xfe' ,b'\xff\xff\xff\xc0\x0c\xff\xff\xff'))
-
-       # print(db.decode_message(419361278 ,b'\xff\xff\xff\xc0\x0c\xff\xff\xff'))
-
-        # try:
-        #     db.decode_message(packetID, packetData)
-        
-        # except:
-        #     print("no match found")
-
-
-        ##print('packet id: '+packetID)
-        ##print('packet data: '+ packetData)
         reformatedID = int(packetID, 16)
-        # print('reformattedID: ' , reformatedID)
-        
-   
-
         reformatedData = b''.join([struct.pack('B', int(''.join(x),16)) for x in zip(packetData[0::2], packetData[1::2])])
         try:
             #example for 0x18fef1fe, when translated into Decimal 
@@ -69,13 +71,47 @@ class PacketManager:
             decoded_message = db.decode_message(reformatedID, reformatedData)
             print(decoded_message)
             print("")
+            canID = ''
+            if("STATUS" in decoded_message):
+                canID = '0x190'
+            
+            if("CMD" in decoded_message):
+                canID = '0x65'
+            
+            if("SENSOR" in decoded_message):
+                canID = '0xc8'
+            
+            if("IO" in decoded_message):
+                canID = '0x1f4'
+            
+            if("HEARTBEAT" in decoded_message):
+                canID = '0x64'
+            if("Engine" in decoded_message):
+                canID = '0Xcf004fe'
+            if("Wheel" in decoded_message):
+                canID = '0Xcf004fe'
+            # endFrame = timestamp+=1
+
+            packetJ = {
+                "PacketID": packetID, 
+                "NodeID": "1",
+                "Frame_Start": timestamp,
+                "CAN_ID" : canID,
+                "Control_Field": "1",
+                "Data_Field": decoded_message, 
+                "CRC_Field": "",
+                "ACK": "1",
+                "Frame_End": timestamp,
+            }
+
             packetJson = {
+                "timestamp": timestamp,
                 "packet_id": packetID,
                 "packet_data": packetData,
                 "decoded_message": decoded_message,
                 "decoded_id": reformatedID,
             }
-            return packetJson
+            return packetJ
         except:
             pass
 
@@ -85,12 +121,13 @@ class PacketManager:
 
 
 
-db = PacketManager.loadDBCFile("C:\\Users\\chris\\OneDrive\\Documents\\SCHOOL\\CAN-Bus Visualizer\\packetID\\CSS-Electronics-SAE-J1939-DEMO.dbc")
+db, nodeList = PacketManager.loadDBCFile("C:\\Users\\chris\\OneDrive\\Documents\\SCHOOL\\CAN-Bus Visualizer\\packetID\\CSS-Electronics-SAE-J1939-DEMO.dbc")
 # db = PacketManager.loadDBCFile('j1939.dbc')
+# db, nodeList = PacketManager.loadDBCFile('practiceDBC.dbc')
 
-
+print(json.dumps(nodeList, indent=4))
 #PacketManager.translatePackets(id, data, db)
-packetCSV = PacketManager.createPacketDict('packets.csv')
+packetCSV = PacketManager.createPacketDict('packets1.csv')
 packetCSV.pop(0)   #removes first line 
 print("")
 packetList = {}
@@ -98,7 +135,8 @@ i = 0
 for x in packetCSV:
     id = (x['ID'])
     data = (x['Data'])
-    packetInfo = PacketManager.translatePackets(id, data, db)
+    timestamp = (x['Timestamp'])
+    packetInfo = PacketManager.translatePackets(id, data, timestamp, db)
     if(packetInfo):
         #print(packetInfo)
         packetList[i] = (packetInfo)
