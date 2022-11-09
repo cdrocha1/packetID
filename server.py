@@ -22,7 +22,7 @@ def uploadFiles():
     return redirect(url_for('index'))
 
 #run on localhost with directory as file var 
-#ex: http://localhost:5000/insert?file=C:\\Users\\chris\\OneDrive\\Documents\\SCHOOL\\CAN-Bus Visualizer\\packetID\\packets.csv
+#ex: http://localhost:5000/insert?file=D:\\SCHOOL D\\packetID\\packets1.csv
 @app.route("/insert")
 def insert():
     file = request.args.get('file')
@@ -33,7 +33,7 @@ def insert():
     #^^other DBC files, uncomment to use#
 
     print(json.dumps(nodeList, indent=4))
-    packetCSV = createPacketDict('D:\\SCHOOL D\\packetID\\packets1.csv')
+    packetCSV = createPacketDict(file)
     packetCSV.pop(0)   #removes first line 
     print("")
     packetList = {}
